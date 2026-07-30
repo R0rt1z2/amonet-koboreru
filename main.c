@@ -25,6 +25,13 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     hexdump((const void *)BDEV_ADDR, 0x30);
 
     apply_patches();
+
+    // Skip LK verification for the next execution. This only takes effect
+    // once we jump back, so the patches above still do the work, but better
+    // safe than sorry.
+    writel(0x3B6C243C, 0x102080);
+    writel(0x0F843E0A, 0x102084);
+
     jump_back();
 
     while (1) {}
