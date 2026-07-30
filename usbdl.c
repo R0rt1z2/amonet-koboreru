@@ -74,7 +74,7 @@ void enter_usbdl(void)
 
     handler.priv = 0;
     handler.attr = 0;
-    handler.cb = (bldr_cmd_handler_t)BLDR_CMD_HANDLER_ADDR;
+    handler.cb = (bldr_cmd_handler_t)(BLDR_CMD_HANDLER_ADDR | 1);
 
     while (1) {
         usb_handshake(&handler);
