@@ -1,9 +1,6 @@
 #include <debug.h>
 #include <device.h>
 #include <mmio.h>
-#include <patch.h>
-
-static const struct patch patches[] = { DEVICE_PATCHES };
 
 static void jump_back(void)
 {
@@ -27,7 +24,7 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
            (unsigned long)blk, (unsigned long)count, dst, (unsigned long)part);
     hexdump((const void *)BDEV_ADDR, 0x30);
 
-    apply_patches(patches, sizeof(patches) / sizeof(patches[0]));
+    apply_patches();
     jump_back();
 
     while (1) {}

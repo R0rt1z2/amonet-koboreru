@@ -5,3 +5,5 @@
 #endif
 
 #include DEVICE_HEADER
+
+void apply_patches(void);

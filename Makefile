@@ -42,9 +42,14 @@ ifneq ($(DEVICE),)
 # manually, or when we are invoked as a sub-make from the targets above.
 
 DEVICE_HEADER := include/devices/$(DEVICE).h
+DEVICE_SRC := devices/$(DEVICE).c
 
 ifeq ($(wildcard $(DEVICE_HEADER)),)
 $(error unknown device '$(DEVICE)', no $(DEVICE_HEADER). Try: make list-targets)
+endif
+
+ifeq ($(wildcard $(DEVICE_SRC)),)
+$(error unknown device '$(DEVICE)', no $(DEVICE_SRC). Try: make list-targets)
 endif
 
 PAYLOAD_ADDR := $(shell sed -n 's/^#define PAYLOAD_ADDR *//p' $(DEVICE_HEADER))
@@ -72,7 +77,7 @@ LDFLAGS += -Wl,--defsym=PAYLOAD_ADDR=$(PAYLOAD_ADDR),--defsym=BSS_START=$(BSS_ST
 
 BUILD_DIR := $(BUILD_ROOT)/$(DEVICE)
 
-C_SRC = main.c debug.c patch.c \
+C_SRC = main.c debug.c patch.c $(DEVICE_SRC) \
         drivers/uart.c drivers/timer.c drivers/wdt.c drivers/rtc.c drivers/devinfo.c \
         lib/libc/memory.c lib/libc/string.c
 ASM_SRC = start.S
