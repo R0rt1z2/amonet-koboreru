@@ -2,6 +2,7 @@
 #include <device.h>
 #include <mmio.h>
 #include <preloader.h>
+#include <usbdl.h>
 
 // int (*bread)(blkdev_t *bdev, u32 blknr, u32 blks, u8 *buf, u32 part_id);
 int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
@@ -38,6 +39,15 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
 #endif
 
     apply_patches();
+
+    // We NOP the str instruction that actually sets up the pointer
+    // to the original descriptor table, so we setup our own regardless
+    // of whether or not we will enter usbdl here, in case we end up in
+    // there outside of enter_usbdl().
+    setup_usb_descriptors();
+
+    // Enter unsecured USB Download Mode if requested.
+    enter_usbdl();
 
     // Restore the g_dram_buf pointer stored in SRAM since basically
     // everything depends on it from where we are.
