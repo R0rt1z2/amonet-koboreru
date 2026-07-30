@@ -4,10 +4,10 @@
 void apply_patches(void)
 {
     // Ensure we can load unsigned DAs
-    patch_word(0x0021C5E4, THUMB_RET_ZERO);
+    patch_ret(0x0021C5E4, 0);
 
     // Skip LK authentication
-    patch_word(0x00211E30, THUMB_RET_ZERO);
+    patch_ret(0x00211E30, 0);
 
     // Make sure we load tee2 instead of tee1
     patch_word(0x0020AF28, 0x00014ECD);

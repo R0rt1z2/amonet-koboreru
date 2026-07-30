@@ -6,10 +6,10 @@ static const char swdl[] = "swdl";
 void apply_patches(void)
 {
     // Ensure we can load unsigned DAs
-    patch_word(0x0021B5E8, THUMB_RET_ZERO);
+    patch_ret(0x0021B5E8, 0);
 
     // Skip LK authentication
-    patch_word(0x0020FD50, THUMB_RET_ZERO);
+    patch_ret(0x0020FD50, 0);
 
     // Make sure we load tee2 instead of tee1
     patch_word(0x00209794, 0x00015243);
