@@ -9,14 +9,33 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     int ret;
     uint32_t addr = LK_LOAD_ADDR, size = 0;
 
-    printf("\nThis is PL-payload by R0rt1z2 and bengris32. Copyright 2026\n");
+    printf("\nLook where you're jumping next time...\n");
+    printf("\n");
+    printf("           .--._.--.            \n");
+    printf("          ( O     O )           \n");
+    printf("          /   . .   \\          \n");
+    printf("         .`._______.'.          \n");
+    printf("        /(           )\\        \n");
+    printf("      _/  \\  \\   /  /  \\_    \n");
+    printf("   .~   `  \\  \\ /  /  '   ~.  \n");
+    printf("  {    -.   \\  V  /   .-    }  \n");
+    printf("_ _`.    \\  |  |  |  /    .'_ _\n");
+    printf(">_       _} |  |  | {_       _< \n");
+    printf(" /. - ~ ,_-'  .^.  `-_, ~ - .\\ \n");
+    printf("         '-'|/   \\|`-`         \n\n");
+    printf("-------------------------------------------------------------\n");
+    printf("This is PL-payload by R0rt1z2 and bengris32. Copyright 2026\n");
     printf("Built at %s and running on %s @ 0x%08lX\n", __TIME__, DEVICE_NAME,
            (unsigned long)__builtin_return_address(0));
+    printf("-------------------------------------------------------------\n");
+    printf("\n");
 
+#ifdef DEBUG
     // Show what we actually overwrote and who invoked us
     printf("\nread(dev %p, blk %lu, count %lu, dst %p, part %lu)\n", dev,
            (unsigned long)blk, (unsigned long)count, dst, (unsigned long)part);
     hexdump((const void *)BDEV_ADDR, 0x30);
+#endif
 
     apply_patches();
 
