@@ -1,6 +1,8 @@
 #include <device.h>
 #include <patch.h>
 
+static const char swdl[] = "swdl";
+
 void apply_patches(void)
 {
     // Ensure we can load unsigned DAs
@@ -14,4 +16,7 @@ void apply_patches(void)
 
     // Always zero out the RPMB block (no ARB)
     patch_word(0x002094C8, 0xBF0058E6);
+
+    // Load LK from swdl on the next run
+    patch_word(0x0020978C, (uint32_t)swdl - (0x00209586 + 4));
 }
