@@ -1,20 +1,14 @@
 #include <debug.h>
 #include <device.h>
 #include <mmio.h>
+#include <preloader.h>
 
-static void jump_back(void)
-{
-    // We need to jump back in ARM state ;(
-    __asm__ volatile("ldr r4, [%0]\n\t"
-                     "bx %1\n\t"
-                     :
-                     : "r"(PRELOADER_BOOT_ARG), "r"(PRELOADER_ENTRY)
-                     : "r4");
-    __builtin_unreachable();
-}
-
+// int (*bread)(blkdev_t *bdev, u32 blknr, u32 blks, u8 *buf, u32 part_id);
 int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
 {
+    int ret;
+    uint32_t addr = LK_LOAD_ADDR, size = 0;
+
     printf("\nThis is PL-payload by R0rt1z2 and bengris32. Copyright 2026\n");
     printf("Built at %s and running on %s @ 0x%08lX\n", __TIME__, DEVICE_NAME,
            (unsigned long)__builtin_return_address(0));
@@ -26,13 +20,31 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
 
     apply_patches();
 
-    // Skip LK verification for the next execution. This only takes effect
-    // once we jump back, so the patches above still do the work, but better
-    // safe than sorry.
-    writel(0x3B6C243C, 0x102080);
-    writel(0x0F843E0A, 0x102084);
+    // Restore the g_dram_buf pointer stored in SRAM since basically
+    // everything depends on it from where we are.
+    writel(DRAM_BUF, SRAM_DBUF_PTR);
 
-    jump_back();
+    // We need to restore the bdev ops before handing back to Preloader.
+    // We can do that by first erasing the list head of the bdev list
+    // and then calling boot_device_init(), which will eventually reset
+    // g_mmc_bdev and call blkdev_register(&g_mmc_bdev), restoring the
+    // contents of the bdev list to before we overwrote it.
+    writel(0, BDEV_LH_ADDR);
+    boot_device_init();
 
-    while (1) {}
+    // Preloader loads LK first before TEE, and if LK fails to load the
+    // it immediately resets, therefore a valid / signed LK image has to
+    // be present in the original LK partition.
+    //
+    // As we are therefore running AFTER LK has been loaded, we need to
+    // re-load the LK from whatever partition is used on the device for
+    // the "real" one.
+    ret = bldr_load_part(LK_PART_NAME, dev, &addr, &size);
+    if (ret)
+        printf("*** Failed to load new LK: %d ***\n", ret);
+
+    // Then hand back with a negative value to indicate a read error.
+    // This will cause Preloader to fall back to the TEE2 partition,
+    // which is what we want!
+    return -1;
 }
