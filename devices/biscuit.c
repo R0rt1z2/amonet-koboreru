@@ -1,6 +1,8 @@
 #include <device.h>
 #include <patch.h>
 
+#include <drivers/pmic_keys.h>
+
 void apply_patches(void)
 {
     // Ensure we can load unsigned DAs
@@ -11,4 +13,9 @@ void apply_patches(void)
 
     // Make sure the ARB check never runs.
     patch_ret(0x00201934, 0);
+}
+
+uint8_t usbdl_detect_key(void)
+{
+    return pmic_key_pressed(USBDL_PMIC_KEY);
 }

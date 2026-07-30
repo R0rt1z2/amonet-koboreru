@@ -1,3 +1,4 @@
+#include <debug.h>
 #include <device.h>
 #include <libc/string.h>
 #include <mmio.h>
@@ -34,6 +35,20 @@ static inline void str2wide(char *str, uint16_t *wide)
         wide[i] = (uint16_t) str[i];
 }
 
+static void do_usb_handshake(void)
+{
+    struct bldr_command_handler handler;
+
+    handler.priv = 0;
+    handler.attr = 0;
+    handler.cb = (bldr_cmd_handler_t)(BLDR_CMD_HANDLER_ADDR | 1);
+
+    while (1) {
+        usb_handshake(&handler);
+        mdelay(2500);
+    }
+}
+
 void setup_usb_descriptors(void)
 {
     struct string_descriptor *string;
@@ -68,16 +83,15 @@ void setup_usb_descriptors(void)
     writel((uint32_t)usb_string_table, (void*)USB_STRING_TABLE_ADDR);
 }
 
+__attribute__((weak)) uint8_t usbdl_detect_key(void)
+{
+    return 0;
+}
+
 void enter_usbdl(void)
 {
-    struct bldr_command_handler handler;
-
-    handler.priv = 0;
-    handler.attr = 0;
-    handler.cb = (bldr_cmd_handler_t)(BLDR_CMD_HANDLER_ADDR | 1);
-
-    while (1) {
-        usb_handshake(&handler);
-        mdelay(2500);
+    if (usbdl_detect_key()) {
+        printf("USBDL key was pressed, doing as you wish...\n");
+        do_usb_handshake();
     }
 }

@@ -19,3 +19,10 @@
 
 #define USB_HANDSHAKE_ADDR    0x00207da8
 #define USB_STRING_TABLE_ADDR 0x0010A654
+
+#define KPD_ROWS        1
+#define KPD_COLS        2
+#define KPD_DEBOUNCE_MS 20
+
+#define USBDL_KEY_ROW 0
+#define USBDL_KEY_COL 1
