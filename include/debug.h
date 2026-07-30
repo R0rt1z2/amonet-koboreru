@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS 1
+#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS 0
 
 #include <nanoprintf.h>
 
