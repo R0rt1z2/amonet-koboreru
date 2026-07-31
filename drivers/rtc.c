@@ -1,3 +1,4 @@
+#include <platform.h>
 #include <mmio.h>
 
 #include <drivers/pwrap.h>

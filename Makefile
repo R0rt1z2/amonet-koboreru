@@ -21,9 +21,15 @@ all: $(DEVICES)
 $(DEVICES):
 	@$(MAKE) --no-print-directory DEVICE=$@ $(TARGET)
 
+PLATFORMS := $(sort $(patsubst platform/%/platform.mk,%,$(wildcard platform/*/platform.mk)))
+
 list-targets:
 	@echo "Device targets:"
-	@$(foreach d,$(DEVICES),printf '  %s\n' '$(d)';)
+	@$(foreach d,$(DEVICES),printf '  %-13s %s\n' '$(d)' \
+	    "$$(sed -n 's/^#define PLATFORM *//p' include/devices/$(d).h)";)
+	@echo ""
+	@echo "Platforms:"
+	@$(foreach p,$(PLATFORMS),printf '  %s\n' '$(p)';)
 	@echo ""
 	@echo "Other targets:"
 	@printf '  %-13s %s\n' 'all'          'build every device (default)'
@@ -55,23 +61,24 @@ endif
 PAYLOAD_ADDR := $(shell sed -n 's/^#define PAYLOAD_ADDR *//p' $(DEVICE_HEADER))
 BSS_START := $(shell sed -n 's/^#define BSS_START *//p' $(DEVICE_HEADER))
 
-UART_BASE ?= 0x11002000
-WDT_BASE ?= 0x10007000
-APXGPT_BASE ?= 0x10008000
-PWRAP_BASE ?= 0x1000D000
-RTC_BASE ?= 0x8000
-GPIO_BASE ?= 0x10005000
-KPD_BASE ?= 0x10010000
+# The device header names its SoC; the platform supplies the MMIO bases, the
+# arch flags and the driver set, since none of those can come from a header.
+PLATFORM := $(strip $(shell sed -n 's/^#define PLATFORM *//p' $(DEVICE_HEADER)))
 
-INCLUDES := -I./include
-DEFINES := -DDEVICE_HEADER=\"devices/$(DEVICE).h\" \
-           -DUART_BASE=$(UART_BASE) \
-           -DWDT_BASE=$(WDT_BASE) \
-           -DAPXGPT_BASE=$(APXGPT_BASE) \
-           -DPWRAP_BASE=$(PWRAP_BASE) \
-           -DRTC_BASE=$(RTC_BASE) \
-           -DGPIO_BASE=$(GPIO_BASE) \
-           -DKPD_BASE=$(KPD_BASE)
+ifeq ($(PLATFORM),)
+$(error $(DEVICE_HEADER) does not define PLATFORM)
+endif
+
+PLATFORM_MK := platform/$(PLATFORM)/platform.mk
+
+ifeq ($(wildcard $(PLATFORM_MK)),)
+$(error device '$(DEVICE)' names unknown platform '$(PLATFORM)', no $(PLATFORM_MK))
+endif
+
+include $(PLATFORM_MK)
+
+INCLUDES := -I./include -Iplatform/include -Iplatform/$(PLATFORM)/include
+DEFINES := -DDEVICE_HEADER=\"devices/$(DEVICE).h\"
 
 CFLAGS := $(INCLUDES) $(DEFINES) -std=gnu99 -Os -mthumb -mcpu=cortex-a9 -fno-builtin-printf -fno-builtin-puts -fno-strict-aliasing -fno-builtin-memcpy -mno-unaligned-access -ffunction-sections -fdata-sections -Wall -Wextra -Wno-unused-parameter -Wno-main
 CFLAGS += $(EXTRA_CFLAGS)
@@ -82,8 +89,7 @@ LDFLAGS += -Wl,--defsym=PAYLOAD_ADDR=$(PAYLOAD_ADDR),--defsym=BSS_START=$(BSS_ST
 BUILD_DIR := $(BUILD_ROOT)/$(DEVICE)
 
 C_SRC = main.c debug.c patch.c usbdl.c $(DEVICE_SRC) \
-        drivers/uart.c drivers/timer.c drivers/wdt.c drivers/rtc.c drivers/devinfo.c \
-        drivers/gpio.c drivers/kpd.c drivers/pwrap.c drivers/pmic_keys.c \
+        $(PLATFORM_SRC) \
         lib/libc/memory.c lib/libc/string.c
 ASM_SRC = start.S
 

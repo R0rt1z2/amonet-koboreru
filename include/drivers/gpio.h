@@ -2,11 +2,11 @@
 
 #include <stdint.h>
 
+#include <platform.h>
+
 #define GPIO_OK              0
 #define GPIO_ERR_INVALID     (-1)
 #define GPIO_ERR_UNSUPPORTED (-2)   /* pad's IES lives in the msdc*_ctrl regs */
-
-#define GPIO_MAX_PIN        0x9b
 
 #define GPIO_DIR_IN         0
 #define GPIO_DIR_OUT        1

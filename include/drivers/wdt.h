@@ -1,5 +1,7 @@
 #pragma once
 
+#include <platform.h>
+
 #include <inttypes.h>
 
 #ifndef WDT_BASE

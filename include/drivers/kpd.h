@@ -1,5 +1,7 @@
 #pragma once
 
+#include <platform.h>
+
 #include <stdbool.h>
 #include <stdint.h>
 

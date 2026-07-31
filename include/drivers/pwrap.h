@@ -1,5 +1,7 @@
 #pragma once
 
+#include <platform.h>
+
 #include <stdint.h>
 
 #ifndef PWRAP_BASE

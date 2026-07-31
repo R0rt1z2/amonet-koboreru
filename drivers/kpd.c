@@ -1,3 +1,4 @@
+#include <platform.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -19,12 +20,6 @@
 #define KPD_SEL_COL        GENMASK(15, 10)
 #define KPD_SEL_ROWMASK(r) GENMASK((r) + 3, 4)
 #define KPD_SEL_COLMASK(c) GENMASK((c) + 9, 10)
-
-#define KPD_PIN_KPCOL0 36
-#define KPD_PIN_FUNC   1
-
-#define KPD_MAX_ROWS 3
-#define KPD_MAX_COLS 3
 
 void kpd_init(uint32_t rows, uint32_t cols, uint32_t debounce_ms)
 {

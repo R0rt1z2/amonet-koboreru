@@ -1,6 +1,7 @@
 #pragma once
 
 #define DEVICE_NAME "checkers"
+#define PLATFORM     mt8163
 
 #define PAYLOAD_ADDR 0x00101000
 #define BSS_START    0x00102180

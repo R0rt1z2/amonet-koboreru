@@ -2,6 +2,7 @@
 #include <device.h>
 #include <libc/string.h>
 #include <mmio.h>
+#include <platform.h>
 #include <preloader.h>
 #include <usbdl.h>
 

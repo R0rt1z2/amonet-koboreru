@@ -2,29 +2,19 @@
 #include <stdint.h>
 
 #include <mmio.h>
+#include <platform.h>
 
 #include <drivers/pmic_keys.h>
 #include <drivers/pwrap.h>
 
-#define MT6323_CHRSTATUS 0x0142
-
-#define CHRSTATUS_PWRKEY_DEB  BIT(1)
-#define CHRSTATUS_HOMEKEY_DEB BIT(2)
-
 bool pmic_key_pressed(uint32_t key)
 {
-    uint16_t mask;
-
-    switch (key) {
-    case PMIC_KEY_POWER:
-        mask = CHRSTATUS_PWRKEY_DEB;
-        break;
-    case PMIC_KEY_HOME:
-        mask = CHRSTATUS_HOMEKEY_DEB;
-        break;
-    default:
+    const struct pmic_keys_regs *kregs;
+    
+    if (key >= PMIC_KEY_NR)
         return false;
-    }
 
-    return !(pwrap_read(MT6323_CHRSTATUS) & mask);
+    kregs = &g_pmic_keys_regs[key];
+
+    return !(pwrap_read(kregs->deb_reg) & kregs->deb_mask);
 }
