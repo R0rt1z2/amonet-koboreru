@@ -1,0 +1,29 @@
+#pragma once
+
+#define DEVICE_NAME "cupcake"
+#define PLATFORM     mt8516
+
+#define PAYLOAD_ADDR 0x00101000
+#define BSS_START    0x00102180
+#define SRAM_DBUF_PTR 0x00102994
+#define DRAM_BUF      0x42000000
+
+#define LK_PART_NAME  "swdl"
+#define LK_LOAD_ADDR  0x41E00000
+
+#define BDEV_ADDR      0x00102A28
+#define BDEV_LH_ADDR   0x00102180
+#define BDEV_INIT_ADDR 0x0020EBB0
+
+#define BLDR_LOAD_PART_ADDR 0x0020DE2C
+#define BLDR_CMD_HANDLER_ADDR 0x0020da80
+
+#define USB_HANDSHAKE_ADDR    0x0020d5a8
+#define USB_STRING_TABLE_ADDR 0x00109e28
+
+#define KPD_ROWS        1
+#define KPD_COLS        1
+#define KPD_DEBOUNCE_MS 20
+
+#define USBDL_KEY_ROW 0
+#define USBDL_KEY_COL 0
