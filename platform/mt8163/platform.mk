@@ -2,7 +2,6 @@ PLATFORM_SRC := \
 	drivers/uart.c \
 	drivers/timer.c \
 	drivers/wdt.c \
-	drivers/rtc.c \
 	drivers/devinfo.c \
 	drivers/gpio.c \
 	drivers/kpd.c \
