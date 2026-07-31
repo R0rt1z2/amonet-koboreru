@@ -83,7 +83,7 @@ BUILD_DIR := $(BUILD_ROOT)/$(DEVICE)
 
 C_SRC = main.c debug.c patch.c usbdl.c $(DEVICE_SRC) \
         drivers/uart.c drivers/timer.c drivers/wdt.c drivers/rtc.c drivers/devinfo.c \
-        drivers/gpio.c drivers/kpd.c \
+        drivers/gpio.c drivers/kpd.c drivers/pwrap.c drivers/pmic_keys.c \
         lib/libc/memory.c lib/libc/string.c
 ASM_SRC = start.S
 
