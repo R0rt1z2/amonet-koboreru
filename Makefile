@@ -60,6 +60,7 @@ WDT_BASE ?= 0x10007000
 APXGPT_BASE ?= 0x10008000
 PWRAP_BASE ?= 0x1000D000
 RTC_BASE ?= 0x8000
+GPIO_BASE ?= 0x10005000
 
 INCLUDES := -I./include
 DEFINES := -DDEVICE_HEADER=\"devices/$(DEVICE).h\" \
@@ -67,7 +68,8 @@ DEFINES := -DDEVICE_HEADER=\"devices/$(DEVICE).h\" \
            -DWDT_BASE=$(WDT_BASE) \
            -DAPXGPT_BASE=$(APXGPT_BASE) \
            -DPWRAP_BASE=$(PWRAP_BASE) \
-           -DRTC_BASE=$(RTC_BASE)
+           -DRTC_BASE=$(RTC_BASE) \
+           -DGPIO_BASE=$(GPIO_BASE)
 
 CFLAGS := $(INCLUDES) $(DEFINES) -std=gnu99 -Os -mthumb -mcpu=cortex-a9 -fno-builtin-printf -fno-builtin-puts -fno-strict-aliasing -fno-builtin-memcpy -mno-unaligned-access -ffunction-sections -fdata-sections -Wall -Wextra -Wno-unused-parameter -Wno-main
 CFLAGS += $(EXTRA_CFLAGS)
@@ -79,6 +81,7 @@ BUILD_DIR := $(BUILD_ROOT)/$(DEVICE)
 
 C_SRC = main.c debug.c patch.c usbdl.c $(DEVICE_SRC) \
         drivers/uart.c drivers/timer.c drivers/wdt.c drivers/rtc.c drivers/devinfo.c \
+        drivers/gpio.c \
         lib/libc/memory.c lib/libc/string.c
 ASM_SRC = start.S
 
