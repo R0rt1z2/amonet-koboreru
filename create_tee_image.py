@@ -48,6 +48,12 @@ def build_bss(device):
 
     return bytes(bss)
 
+def find_partition(img, name):
+    for key in img.partitions:
+        if key.lower() == name.lower():
+            return img.partitions[key]
+    return None
+
 def main():
     parser = ArgumentParser()
 
@@ -63,7 +69,8 @@ def main():
     device = load_device(args.device)
 
     img = MtkImage(args.donor)
-    if not "ATF" in img.partitions or not "TEE" in img.partitions:
+    tee = find_partition(img, "tee")
+    if find_partition(img, "atf") is None or tee is None:
         raise ValueError("Donor TEE image must contain both 'ATF' and 'TEE' partitions")
 
     print("Device: %s" % device.name)
@@ -76,7 +83,6 @@ def main():
 
     print("Payload: %s (%d bytes)" % (args.payload, len(payload)))
 
-    tee = img.partitions["TEE"]
     print("Original TEE size: 0x%X bytes" % tee.header.data_size)
     if len(tee.data) < device.data_size:
         raise ValueError("TEE partition is too small (0x%x bytes)" % len(tee.data))
