@@ -15,8 +15,10 @@ void apply_patches(void)
     patch_ret(0x0020192C, 0);
 }
 
+#if 0
 uint8_t usbdl_detect_key(void)
 {
     kpd_init(KPD_ROWS, KPD_COLS, KPD_DEBOUNCE_MS);
     return kpd_key_pressed(KPD_KEY(USBDL_KEY_ROW, USBDL_KEY_COL));
 }
+#endif
