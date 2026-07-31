@@ -10,7 +10,8 @@ from types import SimpleNamespace
 from liblk import LkImage as MtkImage
 
 DEVICE_DIR = Path(__file__).resolve().parent / "include" / "devices"
-DEVICE_FIELDS = ("PAYLOAD_ADDR", "BSS_START", "DRAM_BUF", "BDEV_ADDR")
+DEVICE_FIELDS = ("PAYLOAD_ADDR", "BSS_START", "DRAM_BUF", "BDEV_ADDR",
+                 "SRAM_DBUF_PTR")
 
 def load_device(name):
     header = DEVICE_DIR / ("%s.h" % name)
@@ -45,6 +46,10 @@ def build_bss(device):
     poke(device.bdev_addr + 0x14, device.dram_buf + 0x48800)   # bounce buffer
     poke(device.bdev_addr + 0x1C, 0)                           # next
     poke(device.read_method, device.payload_addr | 1)          # payload
+
+    # Preserve g_dram_buf pointer if required.
+    if device.bss_start <= device.sram_dbuf_ptr < device.data_size:
+        poke(device.sram_dbuf_ptr, device.dram_buf)
 
     return bytes(bss)
 

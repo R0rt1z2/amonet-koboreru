@@ -49,10 +49,6 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     // Enter unsecured USB Download Mode if requested.
     enter_usbdl();
 
-    // Restore the g_dram_buf pointer stored in SRAM since basically
-    // everything depends on it from where we are.
-    writel(DRAM_BUF, SRAM_DBUF_PTR);
-
     // We need to restore the bdev ops before handing back to Preloader.
     // We can do that by first erasing the list head of the bdev list
     // and then calling boot_device_init(), which will eventually reset
