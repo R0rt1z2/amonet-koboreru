@@ -8,7 +8,7 @@
 #define SRAM_DBUF_PTR 0x00102994
 #define DRAM_BUF      0x42000000
 
-#define LK_PART_NAME  "swdl"
+#define LK_PART_NAME  "expdb"
 #define LK_LOAD_ADDR  0x41E00000
 
 #define BDEV_ADDR      0x00102A28
