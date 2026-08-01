@@ -9,23 +9,25 @@
 #include <drivers/timer.h>
 
 #define USB_DESCRIPTOR_TYPE_STRING 0x03
+#define MAX_USB_STRING_LEN 63
+#define DESC_BUF_SIZE (2 + (2 * MAX_USB_STRING_LEN))
 
-static uint8_t language[4] = { 4, USB_DESCRIPTOR_TYPE_STRING, 0x9, 0x4 };
-static uint8_t manufacturer[2 + 2 * (sizeof (USB_MANUFACTURER) - 1)];
-static uint8_t product[2 + 2 * (sizeof (USB_PRODUCT_NAME) - 1)];
-static uint8_t configuration[2 + 2 * (sizeof (USB_CONFIGURATION_STR) - 1)];
-static uint8_t dataInterface[2 + 2 * (sizeof (USB_DATA_INTERFACE_STR) - 1)];
-static uint8_t commInterface[2 + 2 * (sizeof (USB_COMM_INTERFACE_STR) - 1)];
-static uint8_t iserial[2 + 2 * (sizeof (USB_ISERIAL_STR) - 1)];
+static uint8_t language[4] = { 4, USB_DESCRIPTOR_TYPE_STRING, 0x09, 0x04 };
+static uint8_t manufacturer[DESC_BUF_SIZE];
+static uint8_t product[DESC_BUF_SIZE];
+static uint8_t configuration[DESC_BUF_SIZE];
+static uint8_t dataInterface[DESC_BUF_SIZE];
+static uint8_t commInterface[DESC_BUF_SIZE];
+static uint8_t iserial[DESC_BUF_SIZE];
 
-static struct string_descriptor *usb_string_table[] = {
-    (struct string_descriptor *) language,
-    (struct string_descriptor *) manufacturer,
-    (struct string_descriptor *) product,
-    (struct string_descriptor *) configuration,
-    (struct string_descriptor *) dataInterface,
-    (struct string_descriptor *) commInterface,
-    (struct string_descriptor *) iserial,
+static struct string_descriptor *usb_string_table[USB_STR_MAX] = {
+    [USB_STR_LANG_ID]        = (struct string_descriptor *) language,
+    [USB_STR_MANUFACTURER]   = (struct string_descriptor *) manufacturer,
+    [USB_STR_PRODUCT]        = (struct string_descriptor *) product,
+    [USB_STR_CONFIGURATION]  = (struct string_descriptor *) configuration,
+    [USB_STR_DATA_INTERFACE] = (struct string_descriptor *) dataInterface,
+    [USB_STR_COMM_INTERFACE] = (struct string_descriptor *) commInterface,
+    [USB_STR_SERIAL]         = (struct string_descriptor *) iserial,
 };
 
 static inline void str2wide(char *str, uint16_t *wide)
@@ -50,38 +52,43 @@ static void do_usb_handshake(void)
     }
 }
 
+static void set_descriptor_string(struct string_descriptor *desc, const char *str)
+{
+    if (!desc || !str) return;
+
+    size_t len = strlen(str);
+    if (len > MAX_USB_STRING_LEN) {
+        len = MAX_USB_STRING_LEN;
+    }
+
+    desc->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
+    desc->bLength = (uint8_t)(2 + (2 * len));
+
+    for (size_t i = 0; i < len; i++) {
+        desc->wData[i] = (uint16_t)(uint8_t)str[i];
+    }
+}
+
+void set_usb_string(enum usb_string_index idx, const char *str)
+{
+    if (idx <= USB_STR_LANG_ID || idx >= USB_STR_MAX)
+        return;
+
+    set_descriptor_string(usb_string_table[idx], str);
+}
+
 void setup_usb_descriptors(void)
 {
-    struct string_descriptor *string;
+    /* Setup default values */
+    set_usb_manufacturer(USB_MANUFACTURER);
+    set_usb_product(USB_PRODUCT_NAME);
+    set_usb_configuration(USB_CONFIGURATION_STR);
+    set_usb_data_interface(USB_DATA_INTERFACE_STR);
+    set_usb_comm_interface(USB_COMM_INTERFACE_STR);
+    set_usb_serial(USB_ISERIAL_STR);
 
-    /* Setup descriptor table */
-    string = (struct string_descriptor *) manufacturer;
-    string->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
-    string->bLength = sizeof(manufacturer);
-    str2wide(USB_MANUFACTURER, string->wData);
-
-    string = (struct string_descriptor *) product;
-    string->bLength = sizeof(product);
-    string->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
-    str2wide(USB_PRODUCT_NAME, string->wData);
-
-    string = (struct string_descriptor *) configuration;
-    string->bLength = sizeof(configuration);
-    string->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
-    str2wide(USB_CONFIGURATION_STR, string->wData);
-
-    string = (struct string_descriptor *) dataInterface;
-    string->bLength = sizeof(dataInterface);
-    string->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
-    str2wide(USB_DATA_INTERFACE_STR, string->wData);
-
-    string = (struct string_descriptor *) commInterface;
-    string->bLength = sizeof(commInterface);
-    string->bDescriptorType = USB_DESCRIPTOR_TYPE_STRING;
-    str2wide(USB_COMM_INTERFACE_STR, string->wData);
-
-    /* Overwrite the original descriptor table with ours */
-    writel((uint32_t)usb_string_table, (void*)USB_STRING_TABLE_ADDR);
+    /* Overwrite the original descriptor table pointer with ours */
+    writel((uint32_t)usb_string_table, (void *)USB_STRING_TABLE_ADDR);
 }
 
 __attribute__((weak)) uint8_t usbdl_detect_key(void)
