@@ -46,9 +46,6 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     // there outside of enter_usbdl().
     setup_usb_descriptors();
 
-    // Enter unsecured USB Download Mode if requested.
-    enter_usbdl();
-
     // We need to restore the bdev ops before handing back to Preloader.
     // We can do that by first erasing the list head of the bdev list
     // and then calling boot_device_init(), which will eventually reset
@@ -56,6 +53,9 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     // contents of the bdev list to before we overwrote it.
     writel(0, BDEV_LH_ADDR);
     boot_device_init();
+
+    // Enter insecure USB Download Mode if requested.
+    enter_usbdl(0);
 
     // Preloader loads LK first before TEE, and if LK fails to load the
     // it immediately resets, therefore a valid / signed LK image has to
@@ -65,8 +65,14 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     // re-load the LK from whatever partition is used on the device for
     // the "real" one.
     ret = bldr_load_part(LK_PART_NAME, dev, &addr, &size);
-    if (ret)
+    if (ret) {
         printf("*** Failed to load new LK: %d ***\n", ret);
+        // If we fail to load the actual bootloader, then fall back
+        // into USBDL mode.
+        set_usb_manufacturer("ERROR");
+        set_usb_product("Failed to load LK");
+        enter_usbdl(1);
+    }
 
     // Then hand back with a negative value to indicate a read error.
     // This will cause Preloader to fall back to the TEE2 partition,

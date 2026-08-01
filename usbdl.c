@@ -96,10 +96,10 @@ __attribute__((weak)) uint8_t usbdl_detect_key(void)
     return 0;
 }
 
-void enter_usbdl(void)
+void enter_usbdl(uint8_t force)
 {
-    if (usbdl_detect_key()) {
-        printf("USBDL key was pressed, doing as you wish...\n");
+    if (force || usbdl_detect_key()) {
+        printf("Entering pwned USBDL as you wish...\n");
         do_usb_handshake();
     }
 }

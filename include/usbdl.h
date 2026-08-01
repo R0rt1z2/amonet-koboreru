@@ -25,5 +25,5 @@ static inline void set_usb_data_interface(const char *str) { set_usb_string(USB_
 static inline void set_usb_comm_interface(const char *str) { set_usb_string(USB_STR_COMM_INTERFACE, str); }
 static inline void set_usb_serial(const char *str)         { set_usb_string(USB_STR_SERIAL, str); }
 
-void enter_usbdl(void);
+void enter_usbdl(uint8_t force);
 void setup_usb_descriptors(void);
