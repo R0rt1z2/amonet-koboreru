@@ -26,7 +26,8 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     printf("         '-'|/   \\|`-`         \n\n");
     printf("-------------------------------------------------------------\n");
     printf("This is PL-payload by R0rt1z2 and bengris32. Copyright 2026\n");
-    printf("Built at %s and running on %s @ 0x%08lX\n", __TIME__, DEVICE_NAME,
+    printf("Built at %s and running on %s (%s) @ 0x%08lX\n", __TIME__,
+           DEVICE_NAME, PLATFORM_NAME,
            (unsigned long)__builtin_return_address(0));
     printf("-------------------------------------------------------------\n");
     printf("\n");
