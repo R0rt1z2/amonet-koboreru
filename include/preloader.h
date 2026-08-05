@@ -21,3 +21,9 @@ static int (*const bldr_load_part)(char *name, void *bdev, uint32_t *addr,
 
 static int (*const usb_handshake)(struct bldr_command_handler *handler) =
         (void *)(USB_HANDSHAKE_ADDR | 1);
+
+#ifdef USB_CABLE_IN_ADDR
+static int (*const usb_cable_in)(void) = (void *)(USB_CABLE_IN_ADDR | 1);
+#else
+static inline int usb_cable_in(void) { return 1; }
+#endif
