@@ -1,0 +1,29 @@
+#pragma once
+
+#define DEVICE_NAME "cronos"
+#define PLATFORM     mt8163
+
+#define PAYLOAD_ADDR 0x00101000
+#define BSS_START    0x00102180
+#define SRAM_DBUF_PTR 0x0010298C
+#define DRAM_BUF      0x4BE00000
+
+#define LK_PART_NAME  "expdb"
+#define LK_LOAD_ADDR  0x4BD00000
+
+#define BDEV_ADDR      0x00102DC0
+#define BDEV_LH_ADDR   0x00102180
+#define BDEV_INIT_ADDR 0x0020A324
+
+#define BLDR_LOAD_PART_ADDR 0x0020922C
+#define BLDR_CMD_HANDLER_ADDR 0x00208E85
+
+#define USB_HANDSHAKE_ADDR    0x00207E7C
+#define USB_STRING_TABLE_ADDR 0x0010A654
+
+#define KPD_ROWS        1
+#define KPD_COLS        2
+#define KPD_DEBOUNCE_MS 20
+
+#define USBDL_KEY_ROW 0
+#define USBDL_KEY_COL 1
