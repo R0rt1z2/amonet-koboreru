@@ -1,5 +1,6 @@
 #include <device.h>
 #include <patch.h>
+#include <tee.h>
 
 #include <drivers/kpd.h>
 
@@ -13,6 +14,9 @@ void apply_patches(void)
 
     // Make sure the ARB check never runs.
     patch_ret(0x0020192C, 0);
+
+    // Replace the TEE image loader with our own
+    patch_branch(0x0020DF88, bldr_load_tee_part);
 }
 
 #if 0
