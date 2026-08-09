@@ -3,6 +3,7 @@
 #include <preloader.h>
 #include <tee.h>
 
+#include <drivers/kpd.h>
 #include <drivers/pmic_keys.h>
 
 void apply_patches(void)
@@ -22,5 +23,9 @@ void apply_patches(void)
 
 uint8_t usbdl_detect_key(void)
 {
-    return pmic_key_pressed(USBDL_PMIC_KEY);
+    kpd_init(KPD_ROWS, KPD_COLS, KPD_DEBOUNCE_MS);
+
+    return pmic_key_pressed(USBDL_PMIC_KEY)
+        && kpd_key_pressed(KPD_KEY(VOL_DOWN_ROW, VOL_DOWN_COL))
+        && !kpd_key_pressed(KPD_KEY(VOL_UP_ROW, VOL_UP_COL));
 }

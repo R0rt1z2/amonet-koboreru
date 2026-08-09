@@ -30,4 +30,13 @@
 #define USB_CABLE_IN_ADDR     0x0021030c
 #define USB_STRING_TABLE_ADDR 0x0010A654
 
+#define KPD_ROWS        1
+#define KPD_COLS        2
+#define KPD_DEBOUNCE_MS 20
+
+#define VOL_DOWN_ROW 0
+#define VOL_DOWN_COL 1
+#define VOL_UP_ROW   0
+#define VOL_UP_COL   0
+
 #define USBDL_PMIC_KEY PMIC_KEY_POWER
