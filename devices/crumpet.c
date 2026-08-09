@@ -1,5 +1,6 @@
 #include <device.h>
 #include <patch.h>
+#include <tee.h>
 
 #include <drivers/kpd.h>
 
@@ -19,6 +20,9 @@ void apply_patches(void)
     // to the devices fuses. Patch it to never run too,
     // just to be safe.
     patch_ret(0x00201954, 0);
+
+    // Replace the TEE image loader with our own
+    patch_branch(0x0020E19C, bldr_load_tee_part);
 }
 
 uint8_t usbdl_detect_key(void)
