@@ -10,26 +10,11 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     int ret;
     uint32_t addr = LK_LOAD_ADDR, size = 0;
 
-    printf("\nLook where you're jumping next time...\n");
     printf("\n");
-    printf("           .--._.--.            \n");
-    printf("          ( O     O )           \n");
-    printf("          /   . .   \\          \n");
-    printf("         .`._______.'.          \n");
-    printf("        /(           )\\        \n");
-    printf("      _/  \\  \\   /  /  \\_    \n");
-    printf("   .~   `  \\  \\ /  /  '   ~.  \n");
-    printf("  {    -.   \\  V  /   .-    }  \n");
-    printf("_ _`.    \\  |  |  |  /    .'_ _\n");
-    printf(">_       _} |  |  | {_       _< \n");
-    printf(" /. - ~ ,_-'  .^.  `-_, ~ - .\\ \n");
-    printf("         '-'|/   \\|`-`         \n\n");
-    printf("-------------------------------------------------------------\n");
     printf("This is PL-payload by R0rt1z2 and bengris32. Copyright 2026\n");
     printf("Built at %s and running on %s (%s) @ 0x%08lX\n", __TIME__,
            DEVICE_NAME, PLATFORM_NAME,
            (unsigned long)__builtin_return_address(0));
-    printf("-------------------------------------------------------------\n");
     printf("\n");
 
 #ifdef DEBUG
