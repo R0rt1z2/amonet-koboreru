@@ -13,7 +13,6 @@ static int tee_verify_image(uint32_t *addr, uint32_t size)
     // or a custom (plaintext) one. If we detect the "MTK TEE " header then
     // call the decryption routine as usual.
     if (hdr->magic[0] == TEE_IMAGE_MAGIC0 && hdr->magic[1] == TEE_IMAGE_MAGIC1) {
-        printf("[pl-payload] Detected stock TEE image.\n");
         return mtee_verify_decrypt(addr, *(uint32_t *)TEE_SECMEM_SIZE_ADDR, (uint8_t*)MTEE_IMG_VFY_PUBK_ADDR);
     }
 

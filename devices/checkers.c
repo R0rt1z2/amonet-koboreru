@@ -2,6 +2,7 @@
 #include <patch.h>
 #include <preloader.h>
 #include <tee.h>
+#include <arb.h>
 
 #include <drivers/kpd.h>
 #include <drivers/pmic_keys.h>
@@ -14,8 +15,8 @@ void apply_patches(void)
     // Do not override USB descriptors with the originals.
     patch_word(0x00216E20, 0xBF00447D);
 
-    // Make sure the ARB check never runs.
-    patch_ret(0x0020192C, 0);
+    // Replace the ARB check with a routine that clears the counters.
+    patch_branch(0x0020192C, clear_rpmb_arb);
 
     // Replace the TEE image loader with our own
     patch_branch(0x002091F8, bldr_load_tee_part);

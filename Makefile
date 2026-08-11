@@ -88,7 +88,7 @@ LDFLAGS += -Wl,--defsym=PAYLOAD_ADDR=$(PAYLOAD_ADDR),--defsym=BSS_START=$(BSS_ST
 
 BUILD_DIR := $(BUILD_ROOT)/$(DEVICE)
 
-C_SRC = main.c debug.c patch.c usbdl.c tee.c $(DEVICE_SRC) \
+C_SRC = main.c debug.c patch.c usbdl.c tee.c arb.c $(DEVICE_SRC) \
         $(PLATFORM_SRC) \
         lib/libc/memory.c lib/libc/string.c
 ASM_SRC = start.S
