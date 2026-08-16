@@ -1,3 +1,4 @@
+#include <arb.h>
 #include <device.h>
 #include <patch.h>
 #include <tee.h>
@@ -14,8 +15,8 @@ void apply_patches(void)
     // Do not override USB descriptors with the originals.
     patch_word(0x002170E0, 0xBF004628);
 
-    // Make sure the ARB check never runs.
-    patch_ret(0x00201934, 0);
+    // Replace the ARB check with a routine that clears the counters.
+    patch_branch(0x00201934, clear_rpmb_arb);
 
     // Replace the TEE image loader with our own
     patch_branch(0x0020A32C, bldr_load_tee_part);
