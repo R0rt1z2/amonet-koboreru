@@ -7,6 +7,11 @@
 
 #define PLATFORM_NAME "mt8516"
 
+/* MEMORY LAYOUT */
+#ifndef LK_LOAD_ADDR
+#define LK_LOAD_ADDR  0x41E00000
+#endif
+
 /* MMIO */
 #define UART_BASE       0x11005000
 #define WDT_BASE        0x10007000

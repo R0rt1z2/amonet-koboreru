@@ -9,7 +9,6 @@
 #define DRAM_BUF      0x4BE00000
 
 #define LK_PART_NAME  "expdb"
-#define LK_LOAD_ADDR  0x4BD00000
 
 #define BDEV_ADDR      0x00102DC0
 #define BDEV_LH_ADDR   0x00102180
