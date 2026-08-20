@@ -32,19 +32,15 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
 
     // Load the ARM trusted firmware (BL31).
     ret = part_load(bdev, part, addr, offset, size);
-    if (ret) {
-        printf("[pl-payload] Failed to load ATF sub-partition\n");
+    if (ret)
         return ret;
-    }
 
     ret = tee_verify_image(addr, *size);
     if (ret == ERR_NO_MTEE_HEADER)
         return 0;
 
-    if (ret) {
-        printf("[pl-payload] Failed to verify ATF sub-partition.\n");
+    if (ret)
         return ret;
-    }
 
     next_offset = 0x200 + *size; /* sizeof(part_hdr_t) */
 
@@ -52,16 +48,12 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
     // are NOT fatal since we can run without BL32 (given we are not running
     // the stock BL31 that will try to load it).
     ret = part_load(bdev, part, &tee_addr, next_offset, size);
-    if (ret) {
-        printf("[pl-payload] Failed to load TEE sub-partition.\n");
+    if (ret)
         return 0;
-    }
 
     ret = tee_verify_image(&tee_addr, *size);
-    if (ret) {
-        printf("[pl-payload] Failed to verify TEE sub-partition.\n");
+    if (ret)
         return ret;
-    }
 
     // Set the BL32 entry point.
     tee_set_entry(tee_addr);
