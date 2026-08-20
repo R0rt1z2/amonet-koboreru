@@ -43,13 +43,13 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
     // Enter insecure USB Download Mode if requested.
     enter_usbdl(0);
 
-    // Preloader loads LK first before TEE, and if LK fails to load the
-    // it immediately resets, therefore a valid / signed LK image has to
-    // be present in the original LK partition.
+    // Preloader loads and verifies LK first before TEE, therefore a
+    // valid / signed LK image has to always be present in the original
+    // LK partition.
     //
-    // As we are therefore running AFTER LK has been loaded, we need to
-    // re-load the LK from whatever partition is used on the device for
-    // the "real" one.
+    // Since the original LK has already been verified and placed at its
+    // load address, we can simply load a modified LK from a partition
+    // of our choosing to the same address.
     ret = bldr_load_part(LK_PART_NAME, dev, &addr, &size);
     if (ret) {
         printf("*** Failed to load new LK: %d ***\n", ret);
