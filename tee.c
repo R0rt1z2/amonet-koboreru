@@ -1,4 +1,5 @@
 #include <debug.h>
+#include <mmio.h>
 #include <preloader.h>
 
 #include "tee.h"
@@ -23,7 +24,8 @@ static int tee_verify_image(uint32_t *addr, uint32_t size)
 
 int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, uint32_t *size)
 {   
-    uint32_t next_offset, tee_addr = 0;
+    uint32_t next_offset, tee_addr;
+    uint8_t bl31_raw;
     void *part = part_get(name);
     int ret;
 
@@ -36,26 +38,35 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
         return ret;
 
     ret = tee_verify_image(addr, *size);
-    if (ret == ERR_NO_MTEE_HEADER)
-        return 0;
-
-    if (ret)
+    if (ret && ret != ERR_NO_MTEE_HEADER)
         return ret;
 
+    bl31_raw = (ret == ERR_NO_MTEE_HEADER);
     next_offset = 0x200 + *size; /* sizeof(part_hdr_t) */
 
-    // Try to load the TEE sub-partition now. Note that failures from this
-    // are NOT fatal since we can run without BL32 (given we are not running
-    // the stock BL31 that will try to load it).
-    ret = part_load(bdev, part, &tee_addr, next_offset, size);
-    if (ret)
-        return 0;
+    // We can know if this is a stock TZ image by checking if
+    // BL31 was encrypted or not. If it isn't then we can
+    // safely assume that BL32 isn't either, and so load it
+    // at a chosen fixed address.
+    tee_addr = bl31_raw ? TEE_LOAD_ADDR : 0;
 
-    ret = tee_verify_image(&tee_addr, *size);
+    ret = part_load(bdev, part, &tee_addr, next_offset, size);
     if (ret)
         return ret;
 
-    // Set the BL32 entry point.
+    ret = tee_verify_image(&tee_addr, *size);
+    if (ret == ERR_NO_MTEE_HEADER) {
+        // We need to set tee_secmem_size ourselves in this
+        // case.
+        writel(TEE_MEM_SIZE, TEE_SECMEM_SIZE_ADDR);
+    } else if (ret) {
+        return ret;
+    } else if (bl31_raw) {
+        // If BL31 lacked an MTEE header but BL32 didn't, then
+        // something seriously weird is going on.
+        return -1;
+    }
+
     tee_set_entry(tee_addr);
     return 0;
 }
