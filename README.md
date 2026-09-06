@@ -49,7 +49,13 @@ It then returns an error, which the Preloader takes as a failed read, so it give
 
 Building requires `arm-none-eabi-gcc`, GNU Make, and Python 3 with [liblk](https://github.com/R0rt1z2/liblk).
 
-You can build the payload for every device, or just one with `DEVICE=`:
+Drop a donor TEE from the device's stock firmware into `tees/`, named `tee_<device>.img`, and let the wrapper handle the rest:
+
+```bash
+./build.sh checkers
+```
+
+Steps can also be run by hand. The payload builds for every device, or just one with `DEVICE=`:
 
 ```bash
 make
@@ -58,10 +64,10 @@ make DEVICE=checkers
 
 The result is written to `build/<device>/payload.bin`.
 
-Then craft the TEE image, using a donor TEE from the device's stock firmware:
+Then craft the TEE image:
 
 ```bash
-./create_tee_image.py <donor.img> build/checkers/payload.bin tz.img -d checkers
+python3 create_tee_image.py tees/tee_checkers.img build/checkers/payload.bin tz.img -d checkers
 ```
 
 ## Usage
