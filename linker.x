@@ -23,5 +23,5 @@ SECTIONS
   /DISCARD/ : { *(.interp) *(.dynsym) *(.dynstr) *(.hash) *(.dynamic) *(.comment) }
 
   ASSERT(. <= BSS_START,
-         "payload is too large,: it overlaps the forged BSS!!")
+         "payload is too large, it overlaps the forged BSS!!")
 }
