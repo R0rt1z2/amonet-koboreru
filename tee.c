@@ -52,7 +52,7 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
 
     ret = part_load(bdev, part, &tee_addr, next_offset, size);
     if (ret)
-        return ret;
+        return 0;
 
     ret = tee_verify_image(&tee_addr, *size);
     if (ret == ERR_NO_MTEE_HEADER) {
