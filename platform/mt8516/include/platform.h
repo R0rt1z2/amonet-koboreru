@@ -11,6 +11,12 @@
 #ifndef LK_LOAD_ADDR
 #define LK_LOAD_ADDR  0x41E00000
 #endif
+#ifndef TEE_LOAD_ADDR
+#define TEE_LOAD_ADDR 0x43200000
+#endif
+#ifndef TEE_MEM_SIZE
+#define TEE_MEM_SIZE 0x400000
+#endif
 
 /* MMIO */
 #define UART_BASE       0x11005000
