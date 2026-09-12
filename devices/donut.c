@@ -22,5 +22,5 @@ void apply_patches(void)
 uint8_t usbdl_detect_key(void)
 {
     // Force hacked USBDL for now.
-    return 1;
+    return 0;
 }
