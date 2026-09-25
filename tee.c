@@ -4,6 +4,7 @@
 
 #include <libc/memory.h>
 
+#include "atf.h"
 #include "tee.h"
 
 #define ERR_NO_MTEE_HEADER (-771)
@@ -63,6 +64,7 @@ static void tee_set_secmem(uint32_t start, uint32_t size)
 int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, uint32_t *size)
 {
     uint32_t next_offset, tee_addr, atf_addr;
+    uint32_t atf_skip = 0;
     uint8_t bl31_raw;
     void *part = part_get(name);
     int ret;
@@ -97,14 +99,19 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
 
     bl31_raw = (ret == ERR_NO_MTEE_HEADER);
 
+#ifdef ATF_HANDOFF_ADDR
+    if (atf_note_image(atf_addr, bl31_raw))
+        atf_skip = ATF_UPSTREAM_MAGIC_SIZE;
+#endif
+
 #ifdef TEE_STAGE_ATF
     // tee_verify_image() moves atf_addr past the MTEE header to the entry
     // point, so copy from wherever it ended up rather than from the start of
     // the staging buffer. A raw image has no header and stays put.
-    memcpy((void *)*addr, (const void *)atf_addr, *size);
+    memcpy((void *)*addr, (const void *)(atf_addr + atf_skip), *size - atf_skip);
     memset((void *)stage_addr, 0, *size);
 #else
-    *addr = atf_addr;
+    *addr = atf_addr + atf_skip;
 #endif
 
     next_offset = PART_HDR_SIZE + *size;

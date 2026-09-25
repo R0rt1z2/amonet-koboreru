@@ -1,4 +1,5 @@
 #include <arb.h>
+#include <atf.h>
 #include <bootmode.h>
 #include <device.h>
 #include <mmio.h>
@@ -44,6 +45,9 @@ void apply_patches(void)
 
     // Replace the TEE image loader with our own
     patch_branch(0x000cd570, bldr_load_tee_part);
+
+    // Hand a mainline BL31 the boot information it expects
+    patch_branch(0x000cd69c, bldr_jump64);
 }
 
 uint8_t usbdl_detect_key(void)

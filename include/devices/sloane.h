@@ -6,6 +6,8 @@
 #define ATF_LOAD_ADDR 0x00101000
 #define ATF_MAX_SIZE  0x00010000 /* stock BL31 is 0xb400 */
 
+#define ATF_HANDOFF_ADDR (DRAM_BUF + 0x00200000) /* two pages past dram_buf_t */
+
 #define PAYLOAD_ADDR 0x00114000
 #define BSS_START    0x00116000
 #define SRAM_DBUF_PTR 0x00124ddc
@@ -45,3 +47,7 @@
 #define USB_STRING_TABLE_ADDR 0x0012b630
 
 #define G_BOOT_MODE_ADDR 0x001254b4
+
+#define WDT_KICK_ADDR       0x000d96ec
+#define SAFE_MODE_ADDR      0x000d2e48
+#define TRUSTZONE_JUMP_ADDR 0x000d7c00

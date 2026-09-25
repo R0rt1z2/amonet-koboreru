@@ -43,3 +43,17 @@ static int (*const mtee_verify_decrypt)(uint32_t *addr, uint32_t secmem_size, co
 
 static void (*const tee_set_entry)(uint32_t addr) =
         (void *)(TEE_SET_ENTRY_ADDR | 1);
+
+#ifdef WDT_KICK_ADDR
+static void (*const platform_wdt_kick)(void) = (void *)(WDT_KICK_ADDR | 1);
+#endif
+
+#ifdef SAFE_MODE_ADDR
+static void (*const platform_safe_mode)(int enable, uint32_t timeout_ms) =
+        (void *)(SAFE_MODE_ADDR | 1);
+#endif
+
+#ifdef TRUSTZONE_JUMP_ADDR
+static void (*const trustzone_jump)(uint32_t addr, uint32_t arg1, uint32_t arg2) =
+        (void *)(TRUSTZONE_JUMP_ADDR | 1);
+#endif

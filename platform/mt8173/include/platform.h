@@ -26,6 +26,10 @@
 #define GPIO_BASE       0x10005000
 #define KPD_BASE        0x10010000
 
+/* mp0_rv_addr[0].rv_addr_lw: AArch64 reset vector for the CPU we run on. */
+#define MCUCFG_BASE     0x10200000
+#define MP0_RV_ADDR_LO  (MCUCFG_BASE + 0x38)
+
 /* DEVINFO */
 #define DEVINFO_MAX_INDEX 0x30
 
