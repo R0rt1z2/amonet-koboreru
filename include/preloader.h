@@ -4,6 +4,21 @@
 
 #include "device.h"
 
+#define PART_HEADER_DEFAULT_ADDR 0xFFFFFFFF
+#define LOAD_ADDR_MODE_BACKWARD  0
+
+struct part_hdr {
+    uint32_t magic;
+    uint32_t dsize;
+    char     name[32];
+    uint32_t maddr;
+    uint32_t mode;
+};
+
+typedef char part_hdr_layout_check[
+    (__builtin_offsetof(struct part_hdr, maddr) == 0x28 &&
+     __builtin_offsetof(struct part_hdr, mode)  == 0x2C) ? 1 : -1];
+
 struct bldr_command_handler;
 typedef uint8_t (*bldr_cmd_handler_t)(struct bldr_command_handler *handler,
                                       void *cmd, void *comm);
@@ -51,6 +66,11 @@ static void (*const platform_wdt_kick)(void) = (void *)(WDT_KICK_ADDR | 1);
 #ifdef SAFE_MODE_ADDR
 static void (*const platform_safe_mode)(int enable, uint32_t timeout_ms) =
         (void *)(SAFE_MODE_ADDR | 1);
+#endif
+
+#ifdef TEE_GET_LOAD_ADDR_ADDR
+static uint32_t (*const tee_get_load_addr)(uint32_t size) =
+        (void *)(TEE_GET_LOAD_ADDR_ADDR | 1);
 #endif
 
 #ifdef TRUSTZONE_JUMP_ADDR

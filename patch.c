@@ -7,6 +7,9 @@
 #define THUMB_LDR_R0  0x4800
 #define THUMB_BX_LR   0x4770
 
+#define THUMB_B_W     0x9000
+#define THUMB_BL      0xD000
+
 void patch_word(uint32_t addr, uint32_t value)
 {
     writel(value, addr);
@@ -24,7 +27,7 @@ void patch_ret(uint32_t addr, uint32_t value)
     patch_word(addr + 4, value);
 }
 
-void patch_branch(uint32_t addr, const void *target)
+static void patch_thumb_branch(uint32_t addr, const void *target, uint16_t op)
 {
     int32_t off = (int32_t)(((uint32_t)target & ~1u) - (addr + 4));
     uint32_t u = (uint32_t)off;
@@ -37,8 +40,18 @@ void patch_branch(uint32_t addr, const void *target)
     uint32_t imm10 = (u >> 12) & 0x3FF;
     uint32_t imm11 = (u >> 1) & 0x7FF;
 
-    uint16_t hi = (uint16_t)(0xF000 | (s << 10) | imm10);
-    uint16_t lo = (uint16_t)(0x9000 | (j1 << 13) | (j2 << 11) | imm11);
+    /* The site may only be halfword aligned, so no 32-bit store. */
+    writew((uint16_t)(0xF000 | (s << 10) | imm10), addr);
+    writew((uint16_t)(op | (j1 << 13) | (j2 << 11) | imm11), addr + 2);
+    invalidate_icache_range(addr, 4);
+}
 
-    patch_word(addr, ((uint32_t)lo << 16) | hi);
+void patch_branch(uint32_t addr, const void *target)
+{
+    patch_thumb_branch(addr, target, THUMB_B_W);
+}
+
+void patch_bl(uint32_t addr, const void *target)
+{
+    patch_thumb_branch(addr, target, THUMB_BL);
 }
