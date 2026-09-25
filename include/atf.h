@@ -10,4 +10,5 @@
 #define ATF_UPSTREAM_MAGIC_SIZE 8
 
 int atf_note_image(uint32_t addr, int raw);
+void atf_note_tee(uint32_t addr);
 void bldr_jump64(uint32_t addr, uint32_t arg1, uint32_t arg2);

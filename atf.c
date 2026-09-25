@@ -23,11 +23,15 @@
 #define PARAM_IMAGE_BINARY 0x02
 #define PARAM_BL_PARAMS    0x05
 #define PARAM_VERSION_2    0x02
+#define EP_SECURE          0x00
 #define EP_NON_SECURE      0x01
+#define BL32_IMAGE_ID      4
 #define BL33_IMAGE_ID      5
 
 /* SPSR_64(MODE_EL2, MODE_SP_ELX, DISABLE_ALL_EXCEPTIONS) */
 #define SPSR_EL2H_MASKED   0x3c9
+/* SPSR_64(MODE_EL1, MODE_SP_ELX, DISABLE_ALL_EXCEPTIONS) */
+#define SPSR_EL1H_MASKED   0x3c5
 
 typedef struct {
     uint8_t  type;
@@ -100,17 +104,24 @@ static atf_handoff_t    *const handoff    = (void *)(uintptr_t)ATF_PARAMS_ADDR;
 static atf_trampoline_t *const trampoline = (void *)(uintptr_t)ATF_TRAMPOLINE_ADDR;
 
 static uint8_t upstream;
+static uint32_t bl32_entry;
 
 int atf_note_image(uint32_t addr, int raw)
 {
     const uint32_t *magic = (const uint32_t *)(uintptr_t)addr;
 
+    bl32_entry = 0;
     upstream = raw && magic[0] == ATF_UPSTREAM_MAGIC0
                    && magic[1] == ATF_UPSTREAM_MAGIC1;
     if (upstream)
         printf("Upstream ATF image detected\n");
 
     return upstream;
+}
+
+void atf_note_tee(uint32_t addr)
+{
+    bl32_entry = upstream ? addr : 0;
 }
 
 /* bldr_jump64(jump_addr, &bootarg, sizeof(boot_arg_t)). */
@@ -130,6 +141,28 @@ void bldr_jump64(uint32_t addr, uint32_t arg1, uint32_t arg2)
     handoff->params.h.version = PARAM_VERSION_2;
     handoff->params.h.size    = sizeof(handoff->params);
     handoff->params.head      = (uintptr_t)&handoff->bl33_node;
+
+    // BL31 runs BL32 before BL33
+    if (bl32_entry) {
+        handoff->params.head = (uintptr_t)&handoff->bl32_node;
+
+        handoff->bl32_node.image_id         = BL32_IMAGE_ID;
+        handoff->bl32_node.image_info       = (uintptr_t)&handoff->bl32_image_info;
+        handoff->bl32_node.ep_info          = (uintptr_t)&handoff->bl32_ep_info;
+        handoff->bl32_node.next_params_info = (uintptr_t)&handoff->bl33_node;
+
+        handoff->bl32_image_info.h.type     = PARAM_IMAGE_BINARY;
+        handoff->bl32_image_info.h.version  = PARAM_VERSION_2;
+        handoff->bl32_image_info.h.size     = sizeof(handoff->bl32_image_info);
+        handoff->bl32_image_info.image_base = bl32_entry;
+
+        handoff->bl32_ep_info.h.type    = PARAM_EP;
+        handoff->bl32_ep_info.h.version = PARAM_VERSION_2;
+        handoff->bl32_ep_info.h.size    = sizeof(handoff->bl32_ep_info);
+        handoff->bl32_ep_info.h.attr    = EP_SECURE;
+        handoff->bl32_ep_info.pc        = bl32_entry;
+        handoff->bl32_ep_info.spsr      = SPSR_EL1H_MASKED;
+    }
 
     handoff->bl33_node.image_id   = BL33_IMAGE_ID;
     handoff->bl33_node.image_info = (uintptr_t)&handoff->bl33_image_info;

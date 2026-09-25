@@ -144,6 +144,13 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
         return -1;
     }
 
+#ifdef ATF_HANDOFF_ADDR
+    // A mainline BL31 ignores tee_set_entry(), it only learns about BL32
+    // through the bl_params chain we build in bldr_jump64().
+    if (bl31_raw)
+        atf_note_tee(tee_addr);
+#endif
+
     tee_set_entry(tee_addr);
     return 0;
 }
