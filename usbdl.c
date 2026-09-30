@@ -7,6 +7,7 @@
 #include <usbdl.h>
 
 #include <drivers/timer.h>
+#include <drivers/wdt.h>
 
 #define USB_DESCRIPTOR_TYPE_STRING 0x03
 #define MAX_USB_STRING_LEN 63
@@ -99,6 +100,7 @@ __attribute__((weak)) uint8_t usbdl_detect_key(void)
 void enter_usbdl(uint8_t force)
 {
     if (force || (usb_cable_in() && usbdl_detect_key())) {
+        mtk_wdt_disable();
         printf("Entering pwned USBDL as you wish...\n");
         do_usb_handshake();
     }
