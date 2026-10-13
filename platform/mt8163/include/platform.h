@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include <device.h>
+
 #include <pdata/gpio.h>
 #include <pdata/pmic_keys.h>
 
