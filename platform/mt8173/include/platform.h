@@ -8,6 +8,7 @@
 #define PLATFORM_NAME "mt8173"
 
 /* MEMORY LAYOUT */
+#define PRELOADER_BASE 0x000C1000
 #ifndef LK_LOAD_ADDR
 #define LK_LOAD_ADDR  0x41e00000
 #endif

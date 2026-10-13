@@ -8,6 +8,7 @@
 #define PLATFORM_NAME "mt8516"
 
 /* MEMORY LAYOUT */
+#define PRELOADER_BASE 0x00201000
 #ifndef LK_LOAD_ADDR
 #define LK_LOAD_ADDR  0x41E00000
 #endif
