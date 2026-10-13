@@ -40,6 +40,7 @@ def load_device(name):
     for field in DEVICE_FIELDS:
         setattr(device, field.lower(), defines[field])
 
+    device.platform = defines.get("PLATFORM")
     device.preloader_base = platform_define(defines, "PRELOADER_BASE")
 
     device.read_method = device.bdev_addr + 0x20
@@ -104,7 +105,7 @@ def main():
     if find_partition(img, "atf") is None or tee is None:
         raise ValueError("Donor TEE image must contain both 'ATF' and 'TEE' partitions")
 
-    print("Device: %s" % device.name)
+    print("Device: %s (%s)" % (device.name, device.platform))
     print("Donor TEE image: %s" % args.donor)
     print("BSS start: 0x%X" % device.bss_start)
 
