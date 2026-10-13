@@ -19,7 +19,9 @@
 #endif
 
 /* MMIO */
+#ifndef UART_BASE
 #define UART_BASE       0x11002000
+#endif
 #define WDT_BASE        0x10007000
 #define APXGPT_BASE     0x10008000
 #define PWRAP_BASE      0x1000D000

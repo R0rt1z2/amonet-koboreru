@@ -1,3 +1,4 @@
+#include <device.h>
 #include <platform.h>
 #include <mmio.h>
 
