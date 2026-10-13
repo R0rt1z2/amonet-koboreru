@@ -17,6 +17,11 @@ int main(void *dev, uint32_t blk, uint32_t count, void *dst, uint32_t part)
            (unsigned long)__builtin_return_address(0));
     printf("\n");
 
+#ifdef PRELOADER_UART_PTR
+    // The .text splice reset the Preloader's console UART to UART3.
+    writel(UART_BASE, PRELOADER_UART_PTR);
+#endif
+
 #ifdef DEBUG
     // Show what we actually overwrote and who invoked us
     printf("\nread(dev %p, blk %lu, count %lu, dst %p, part %lu)\n", dev,

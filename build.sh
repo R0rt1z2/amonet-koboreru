@@ -4,7 +4,12 @@ set -e
 
 cd "$(dirname "$(readlink -f "$0")")"
 
+read_define() {
+    awk -v name="$2" '$1 == "#define" && $2 == name { print $3 }' "$1"
+}
+
 DEVICE="$1"
+PLATFORM="$(read_define "include/devices/$DEVICE.h" PLATFORM)"
 
 usage() {
     echo "Usage: $0 <device>"
@@ -37,7 +42,17 @@ if [ ! -f "$DONOR" ]; then
     exit 1
 fi
 
+PRELOADER_ARGS=()
+if [ "$PLATFORM" = "mt8173" ]; then
+    PRELOADER="preloaders/preloader_$DEVICE.bin"
+    if [ ! -f "$PRELOADER" ]; then
+        echo "error: no preloader for '$DEVICE', expected $PRELOADER"
+        exit 1
+    fi
+    PRELOADER_ARGS=(--preloader "$PRELOADER")
+fi
+
 make clean DEVICE="$DEVICE"
 make DEVICE="$DEVICE"
 
-python3 create_tee_image.py "$DONOR" "$PAYLOAD" "$OUTPUT" -d "$DEVICE"
+python3 create_tee_image.py "$DONOR" "$PAYLOAD" "$OUTPUT" -d "$DEVICE" "${PRELOADER_ARGS[@]}"
