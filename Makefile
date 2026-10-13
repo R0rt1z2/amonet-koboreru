@@ -58,12 +58,12 @@ ifeq ($(wildcard $(DEVICE_SRC)),)
 $(error unknown device '$(DEVICE)', no $(DEVICE_SRC). Try: make list-targets)
 endif
 
-PAYLOAD_ADDR := $(shell sed -n 's/^#define PAYLOAD_ADDR *//p' $(DEVICE_HEADER))
-BSS_START := $(shell sed -n 's/^#define BSS_START *//p' $(DEVICE_HEADER))
+PAYLOAD_ADDR := $(shell sed -n 's/^\#define PAYLOAD_ADDR *//p' $(DEVICE_HEADER))
+BSS_START := $(shell sed -n 's/^\#define BSS_START *//p' $(DEVICE_HEADER))
 
 # The device header names its SoC; the platform supplies the MMIO bases, the
 # arch flags and the driver set, since none of those can come from a header.
-PLATFORM := $(strip $(shell sed -n 's/^#define PLATFORM *//p' $(DEVICE_HEADER)))
+PLATFORM := $(strip $(shell sed -n 's/^\#define PLATFORM *//p' $(DEVICE_HEADER)))
 
 ifeq ($(PLATFORM),)
 $(error $(DEVICE_HEADER) does not define PLATFORM)
