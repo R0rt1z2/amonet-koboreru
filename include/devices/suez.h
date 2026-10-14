@@ -1,0 +1,69 @@
+#pragma once
+
+#define DEVICE_NAME "suez"
+#define PLATFORM     mt8173
+
+#define ATF_LOAD_ADDR 0x00101000
+#define ATF_MAX_SIZE  0x00010000 /* stock BL31 is 0xb400 */
+
+#define ATF_HANDOFF_ADDR (DRAM_BUF + 0x00200000) /* two pages past dram_buf_t */
+
+#define PAYLOAD_ADDR 0x00114000
+#define BSS_START    0x00116000
+#define PRELOADER_UART_PTR 0x000EC6B0
+#define SRAM_DBUF_PTR 0x00124dd8
+#define DRAM_BUF      0x4be00000
+
+#define LK_LOAD_ADDR  0x4bd00000
+#define TEE_LOAD_ADDR 0xb6c00000
+
+#define LK_PART_NAME  "reserved"
+
+#define BDEV_ADDR      0x001253d0
+#define BDEV_LH_ADDR   0x00124580
+#define BDEV_INIT_ADDR 0x000cf82c
+
+#define PART_GET_ADDR  0x000d4c28
+#define PART_LOAD_ADDR 0x000d4c90
+
+#define BLDR_CMD_HANDLER_ADDR 0x000ce8e5
+
+#define ATF_LOG_BUF_START_ADDR  0x0012b5ac
+#define TEE_SECMEM_START_ADDR   0x0012b5b0
+#define TEE_SECMEM_SIZE_ADDR    0x0012b5b8
+#define TEE_ENTRY_ADDR          0x0012b5c4
+
+#define TEE_SET_ENTRY_ADDR   0x000da798
+#define TEE_GET_LOAD_ADDR_ADDR 0x000da834
+#define TEE_SEC_CHUNK_OFF 0x99840
+
+#define SEC_HEAP_USED_ADDR 0x0012c5b8
+
+#define SEC_CRYPTO_CACHE_ADDR 0x0012c528
+#define SEC_CRYPTO_CACHE_SIZE 0x14
+
+#define MTEE_IMG_VFY_PUBK_ADDR   0x000ebb6e
+#define MTEE_VERIFY_DECRYPT_ADDR 0x000e124e
+
+#define RPMB_BLOCK0_READ_ADDR  0x000d10ec
+#define RPMB_GET_WC_ADDR       0x000d0fc0
+#define RPMB_BLOCK0_WRITE_ADDR 0x000d11e0
+
+#define USB_HANDSHAKE_ADDR    0x000cd820
+#define USB_CABLE_IN_ADDR     0x000d54e0
+#define USB_STRING_TABLE_ADDR 0x0012ba50
+
+#define G_BOOT_MODE_ADDR 0x00125924
+
+#define KPD_ROWS        1
+#define KPD_COLS        2
+#define KPD_DEBOUNCE_MS 20
+
+#define VOL_UP_ROW   0
+#define VOL_UP_COL   0
+#define VOL_DOWN_ROW 0
+#define VOL_DOWN_COL 1
+
+#define WDT_KICK_ADDR       0x000dcbc8
+#define SAFE_MODE_ADDR      0x000d5450
+#define TRUSTZONE_JUMP_ADDR 0x000cef7c
