@@ -126,6 +126,13 @@ int bldr_load_tee_part(char *name, void *bdev, uint32_t *addr, uint32_t offset, 
     if (ret)
         return 0;
 
+#ifdef SEC_CRYPTO_CACHE_ADDR
+    // The secure heap never frees, so BL31 leaves no room for BL32. Reclaim
+    // it and drop the cached singletons or BL32's RSA fails (-8).
+    writel(0, SEC_HEAP_USED_ADDR);
+    memset((void *)SEC_CRYPTO_CACHE_ADDR, 0, SEC_CRYPTO_CACHE_SIZE);
+#endif
+
     ret = tee_verify_image(&tee_addr, *size);
     if (ret == ERR_NO_MTEE_HEADER) {
 #ifdef TEE_SECMEM_START_ADDR
