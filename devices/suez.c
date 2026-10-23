@@ -24,6 +24,9 @@ void apply_patches(void)
 
     // Hand a mainline BL31 the boot information it expects.
     patch_branch(0x000cf224, bldr_jump64);
+
+    // Don't let part_load re-init DRAM and collapse the 2GB decode.
+    patch_branch(0x000CC192, (const void *)0x000CC2C8);
 }
 
 uint8_t usbdl_detect_key(void)
